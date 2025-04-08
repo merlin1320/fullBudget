@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
   { label: "Home", path: "/home" },
-  { label: "Budget", path: "/budget" },
   { label: "Income/Expenses", path: "/income-expenses" },
+  { label: "Budget", path: "/budget" },
   { label: "Profile", path: "/profile" },
 ];
 

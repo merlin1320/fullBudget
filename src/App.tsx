@@ -14,8 +14,8 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
-          <Route path="budget" element={<Budget />} />
           <Route path="income-expenses" element={<IncomeExpenses />} />
+          <Route path="budget" element={<Budget />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
