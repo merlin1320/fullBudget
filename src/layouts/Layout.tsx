@@ -1,5 +1,5 @@
 import { Box, Toolbar, useTheme } from "@mui/material";
-import React, { FC } from "react";
+import { FC } from "react";
 import Navbar from "../components/nav/Nav";
 import { Outlet } from "react-router-dom";
 

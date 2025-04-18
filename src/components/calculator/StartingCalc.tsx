@@ -61,7 +61,16 @@ const StartingCalc: React.FC = () => {
   const [hoursWorked, setHoursWorked] = useState<number>(40);
   const [federalTaxRate, setFederalTaxRate] = useState<number>(20);
   const [state, setState] = useState<string>("California");
+  const [preTaxDeductions, setPreTaxDeductions] = useState<number>(0);
+  const [postTaxDeductions, setPostTaxDeductions] = useState<number>(0);
+  const [extraIncome, setExtraIncome] = useState<number>(0);
   const [takeHomePay, setTakeHomePay] = useState<number | null>(null);
+  const [monthlyIncome, setMonthlyIncome] = useState<number | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [expenses, setExpenses] = useState<{ category: string; amount: number }[]>([]);
+  const [newCategory, setNewCategory] = useState<string>("");
+  const [expenseCategory, setExpenseCategory] = useState<string>("");
+  const [expenseAmount, setExpenseAmount] = useState<number>(0);
 
   const calculatePay = () => {
     let grossPay = 0;
@@ -74,8 +83,24 @@ const StartingCalc: React.FC = () => {
 
     const stateTaxRate = stateTaxRates[state] || 0;
     const totalTaxRate = federalTaxRate + stateTaxRate;
-    const afterTaxPay = grossPay - (grossPay * totalTaxRate) / 100;
+    const afterTaxPay = grossPay - preTaxDeductions - (grossPay * totalTaxRate) / 100 - postTaxDeductions + extraIncome;
     setTakeHomePay(afterTaxPay);
+    setMonthlyIncome(afterTaxPay / 12);
+  };
+
+  const addCategory = () => {
+    if (newCategory && !categories.includes(newCategory)) {
+      setCategories([...categories, newCategory]);
+      setNewCategory("");
+    }
+  };
+
+  const addExpense = () => {
+    if (expenseCategory && expenseAmount > 0) {
+      setExpenses([...expenses, { category: expenseCategory, amount: expenseAmount }]);
+      setExpenseCategory("");
+      setExpenseAmount(0);
+    }
   };
 
   return (
@@ -126,6 +151,33 @@ const StartingCalc: React.FC = () => {
         </Select>
       </FormControl>
 
+      <TextField
+        label="Pre-Tax Deductions ($)"
+        type="number"
+        fullWidth
+        value={preTaxDeductions}
+        onChange={(e) => setPreTaxDeductions(parseFloat(e.target.value) || 0)}
+        sx={{ mb: 2 }}
+      />
+
+      <TextField
+        label="Post-Tax Deductions ($)"
+        type="number"
+        fullWidth
+        value={postTaxDeductions}
+        onChange={(e) => setPostTaxDeductions(parseFloat(e.target.value) || 0)}
+        sx={{ mb: 2 }}
+      />
+
+      <TextField
+        label="Extra Income ($)"
+        type="number"
+        fullWidth
+        value={extraIncome}
+        onChange={(e) => setExtraIncome(parseFloat(e.target.value) || 0)}
+        sx={{ mb: 2 }}
+      />
+
       <Button variant="contained" color="primary" fullWidth onClick={calculatePay} sx={{ mt: 2 }}>
         Calculate Take-Home Pay
       </Button>
@@ -135,6 +187,56 @@ const StartingCalc: React.FC = () => {
           Take-Home Pay: ${takeHomePay.toFixed(2)}
         </Typography>
       )}
+
+      {monthlyIncome !== null && (
+        <Typography variant="h6" sx={{ mt: 1 }}>
+          Monthly Income: ${monthlyIncome.toFixed(2)}
+        </Typography>
+      )}
+
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" gutterBottom>Categories</Typography>
+        <TextField
+          label="New Category"
+          type="text"
+          fullWidth
+          value={newCategory}
+          onChange={(e) => setNewCategory(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <Button variant="contained" color="primary" fullWidth onClick={addCategory} sx={{ mb: 2 }}>
+          Add Category
+        </Button>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Expense Category</InputLabel>
+          <Select value={expenseCategory} onChange={(e) => setExpenseCategory(e.target.value)}>
+            {categories.map((category) => (
+              <MenuItem key={category} value={category}>{category}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          label="Expense Amount ($)"
+          type="number"
+          fullWidth
+          value={expenseAmount}
+          onChange={(e) => setExpenseAmount(parseFloat(e.target.value) || 0)}
+          sx={{ mb: 2 }}
+        />
+
+        <Button variant="contained" color="primary" fullWidth onClick={addExpense} sx={{ mb: 2 }}>
+          Add Expense
+        </Button>
+
+        <Typography variant="h6" gutterBottom>Expenses</Typography>
+        {expenses.map((expense, index) => (
+          <Typography key={index} variant="body1">
+            {expense.category}: ${expense.amount.toFixed(2)}
+          </Typography>
+        ))}
+      </Box>
     </Box>
   );
 };

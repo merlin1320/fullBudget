@@ -1,8 +1,13 @@
-import React from 'react'
+import { Box } from '@mui/material'
+import StartingCalc from '../components/calculator/StartingCalc'
+import BudgetTool from '../components/display/BudgetTool'
 
 export const IncomeExpenses = () => {
   return (
-    <div>Home</div>
+    <Box>
+      <StartingCalc/>
+      <BudgetTool/>
+    </Box>
   )
 }
 
